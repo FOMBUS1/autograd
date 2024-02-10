@@ -1,7 +1,7 @@
 # autograd
 This struct creates objects that can automatically calculate their gradients.
 
-```
+```cpp
 Value a = -3.0;
 Value b = 2.0;
 Value c = a * b;
@@ -10,7 +10,7 @@ Value d = e+c;
 d.backward();
 ```
 After the code completed gradients will be:
-```
+```cpp
 a.grad = 2.0;
 b.grad = -3.0;
 c.grad = 1.0;
