@@ -4,7 +4,7 @@
 #include <algorithm>
 
 struct Value {
-public:
+private:
     float data;
     float grad = 0;
 
@@ -66,6 +66,19 @@ public:
         return out;
     };
 
+    Value relu() {
+        Value out = this->data;
+        out.children.push_back(this);
+        if (this->data < 0) {
+            out.data = 0;
+        }
+        auto back = [&] () {
+            this->grad += (out.data > 0) * out.get_grad(); 
+        };
+        out.backward_step = back;
+        return out;
+    }
+
     void backward() {
         std::vector<Value*> topo;
         build_topo(this, topo);
@@ -97,10 +110,14 @@ public:
 int main() {
     Value a = -3.0;
     Value b = 2.0;
-    Value c = a * b;
+    Value k = a.relu();
+    Value c = k * b;
     Value e = 10.0;
     Value d = e+c;
     d.backward();
     std::cout << "a_grad: " << a.get_grad() << std::endl;
     std::cout << "b_grad: " << b.get_grad() << std::endl;
+    std::cout << "c_grad: " << c.get_grad() << std::endl;
+    std::cout << "e_grad: " << e.get_grad() << std::endl;
+    std::cout << "d_grad: " << d.get_grad() << std::endl;
 }
