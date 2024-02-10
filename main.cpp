@@ -101,8 +101,6 @@ int main() {
     Value e = 10.0;
     Value d = e+c;
     d.backward();
-    //da/dd = ((a*b) + e)' = b = 2
-    //db/dd = ((a*b) + e)' = a = -3
     std::cout << "a_grad: " << a.get_grad() << std::endl;
     std::cout << "b_grad: " << b.get_grad() << std::endl;
 }
