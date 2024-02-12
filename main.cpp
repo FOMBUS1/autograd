@@ -5,6 +5,8 @@
 
 struct Value {
 private:
+    friend Value operator* (float obj, Value &a);
+    friend Value operator+ (float obj, Value &a);
     float data;
     float grad = 0;
 
@@ -32,6 +34,10 @@ private:
     };
 
 public:
+    Value () {
+        this->data = 0;
+        this->grad = 0;
+    }
     Value(float data) {
         this->data = data;
     };
@@ -43,8 +49,22 @@ public:
         out.children.push_back(&obj);
 
         auto back = [&] () {
-            this->grad += out.grad;
-            obj.grad += out.grad;
+            this->grad += out.get_grad();
+            obj.grad += out.get_grad();
+        };
+
+        out.backward_step = back;
+
+        return out;
+    };
+
+    Value operator+ (float obj) {
+        Value out = Value(this->data + obj);
+
+        out.children.push_back(this);
+
+        auto back = [&out, obj, this] () {
+            this->grad += out.get_grad();
         };
 
         out.backward_step = back;
@@ -65,6 +85,18 @@ public:
         out.backward_step = back;
         return out;
     };
+
+    Value operator* (float obj) {
+        Value out = Value(this->data * obj);
+        out.children.push_back(this);
+
+        auto back = [&out, obj, this] () {
+            this->grad += obj * out.grad;
+        };
+        out.backward_step = back;
+        return out;
+     }
+
 
     Value relu() {
         Value out = this->data;
@@ -107,17 +139,32 @@ public:
 
 };
 
+Value operator* (float obj, Value &a) {
+    Value out = Value(obj + a.data);
+    out.children.push_back(&a);
+
+    auto back = [&out, obj, &a] () {
+            a.grad += obj * out.grad;
+        };
+        out.backward_step = back;
+        return out;
+}
+
+Value operator+ (float obj, Value &a) {
+        Value out = Value(a.data + obj);
+        out.children.push_back(&a);
+        auto back = [&out, obj, &a] () {
+            a.grad += out.get_grad();
+        };
+
+        out.backward_step = back;
+
+        return out;
+    };
+
 int main() {
-    Value a = -3.0;
-    Value b = 2.0;
-    Value k = a.relu();
-    Value c = k * b;
-    Value e = 10.0;
-    Value d = e+c;
-    d.backward();
-    std::cout << "a_grad: " << a.get_grad() << std::endl;
-    std::cout << "b_grad: " << b.get_grad() << std::endl;
-    std::cout << "c_grad: " << c.get_grad() << std::endl;
-    std::cout << "e_grad: " << e.get_grad() << std::endl;
-    std::cout << "d_grad: " << d.get_grad() << std::endl;
+    Value x = 1.0;
+    Value y = 1.5 + x;
+    y.backward();
+    std::cout << x.get_grad() << std::endl;
 }
