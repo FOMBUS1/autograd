@@ -147,3 +147,8 @@ Value operator+ (float obj, Value &a) {
 
     return out;
 };
+
+std::ostream& operator<< (std::ostream& os, const Value& obj) {
+    os << "Value: " << obj.grad << std::endl << "Gradient: " << obj.grad; 
+    return os;
+}

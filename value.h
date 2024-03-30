@@ -1,4 +1,5 @@
 #include <vector>
+#include <ostream>
 #include <algorithm>
 
 struct Value {
@@ -15,6 +16,8 @@ private:
     void build_topo(Value* v, std::vector<Value*> &topo);
 
     bool check(Value* v, std::vector<Value*> &topo);
+
+    friend std::ostream& operator<< (std::ostream& os, const Value& obj);
 
 public:
     Value ();

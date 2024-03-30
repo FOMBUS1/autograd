@@ -7,6 +7,6 @@ int main() {
     Value k = 2*x;
     Value z = k+y;
     z.backward();
-    std::cout << "x gradient: " << x.get_grad() << std::endl;
-    std::cout << "y gradient: " << y.get_grad() << std::endl;
+    std::cout << x << std::endl;
+    std::cout << y << std::endl;
 }
