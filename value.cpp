@@ -1,4 +1,6 @@
 #include "value.h"
+#include <iostream>
+#include <functional>
 
 void Value::build_topo(Value* v, std::vector<Value*> &topo) {
     if (check(v, topo)) {
